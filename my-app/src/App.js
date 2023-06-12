@@ -1,13 +1,15 @@
-import React from "react";
-//import { writeFile } from 'fs/promises';
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+import {React, useState} from "react"; 
+import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
 
 
 function App() {
 
+  const [videoFiles, setVideoFiles] = useState({})
+
   function convertFunction(e){
     const files = Array.from(e.target.files)
     console.log("files:", files)
+    setVideoFiles(files)
   }
 
   return (
