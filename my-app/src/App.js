@@ -1,5 +1,5 @@
 import {React, useEffect, useState} from "react"; 
-import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
+import { createFFmpeg, fetchFile} from "@ffmpeg/ffmpeg";
 
 const ffmpeg = createFFmpeg({log: true});
 
@@ -26,11 +26,12 @@ function App() {
     console.log("files:", files)
     setVideoFiles(files)
     ffmpeg.FS('writeFile', 'test.mp4', await fetchFile(videoFiles));
-    await ffmpeg.run("-i", 'test.mp4', '-vcodec', 'copy', '-acodec', 'copy', 'out.mp4');
-    const data = ffmpeg.FS("readFile", "out.mp4");
-
-    const url = URL.createObjectURL(new Blob(data.buffer), {type: 'video/mp4'});
-    setReadyVideos(url);
+    await ffmpeg.run("-i", "vid.mov", "-s", "480x320", "-r", "3", "-t", String(files.length), "-ss", String(files.start), "-f", "gif", "out.gif");
+    //await writeFile('./test.mp4', ffmpeg.FS("readFile", "out.mp4"));
+   // const data = ffmpeg.FS("readFile", "out.gif");
+    //const url = URL.createObjectURL(new Blob([data.buffer], {type: "image/gif"}));
+    //setReadyVideos(url);
+    process.exit(0);
   }
 
   return ready ? (
