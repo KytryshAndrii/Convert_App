@@ -6,7 +6,7 @@ const ffmpeg = createFFmpeg({log: true});
 
 function App() {
 
-  const [videoFiles, setVideoFiles] = useState({});
+  const [videoFiles, setVideoFiles] = useState();
 
   const [readyVideos, setReadyVideos] = useState();
 
@@ -21,29 +21,34 @@ function App() {
     load();
   }, [])
 
-  async function convertFunction(e){
-    const files = Array.from(e.target.files[0])
-    console.log("files:", files)
-    setVideoFiles(files)
-    ffmpeg.FS('writeFile', 'test.mp4', await fetchFile(videoFiles));
-    await ffmpeg.run("-i", "vid.mov", "-s", "480x320", "-r", "3", "-t", String(files.length), "-ss", String(files.start), "-f", "gif", "out.gif");
-    //await writeFile('./test.mp4', ffmpeg.FS("readFile", "out.mp4"));
-   // const data = ffmpeg.FS("readFile", "out.gif");
-    //const url = URL.createObjectURL(new Blob([data.buffer], {type: "image/gif"}));
-    //setReadyVideos(url);
-    process.exit(0);
+  async function convertFunction(){
+
+   ffmpeg.FS('writeFile', 'test.mov', await fetchFile(videoFiles));
+
+   await ffmpeg.run("-i", 'test.mov', "-vcodec", "copy", "-acodec", "copy", 'out.mp4');
+//'-qscale', '0',
+    const data = ffmpeg.FS('readFile', 'out.mp4');
+
+    const url = URL.createObjectURL(new Blob([data.buffer], {type: "video/mp4"}));
+
+    setReady(url);
+
   }
 
   return ready ? (
     <div className="App">
-      {videoFiles?<p>hi</p>:<p>huj</p>}
+      {videoFiles && <video 
+                      height='500'
+                      width="450"
+                      src={URL.createObjectURL(videoFiles)}
+                      type="video/mov"
+                      controls
+                      >
+                      </video>}
       <p>FFMPEG is COOL!</p>
-      <input type="file" id="files" name="files" accept="video/mov" onChange={convertFunction} multiple/>
-      <video controls 
-              width='250'
-              src={readyVideos}
-      
-      ></video>
+      <input type="file" id="files" name="files" onChange={(e)=> setVideoFiles(e.target.files[0])} multiple/>
+      <button onClick={convertFunction}>Convert</button>
+     {ready && <video src={ready} height='500' width='450' type="video/mp4" controls />}
     </div>
   ) : (<p>Loading .....</p>)
 }
