@@ -1,5 +1,7 @@
 import {React, useEffect, useState} from "react"; 
 import { createFFmpeg, fetchFile} from "@ffmpeg/ffmpeg";
+import JSZip from "jszip";
+import {saveAs} from "file-saver"
 
 const ffmpeg = createFFmpeg({log: true});
 
@@ -8,7 +10,7 @@ function App() {
 
   const [videoFiles, setVideoFiles] = useState();
 
-  const [readyVideos, setReadyVideos] = useState();
+  const readyVideos = [];
 
   const [ready, setReady] = useState(false);
 
@@ -21,11 +23,16 @@ function App() {
     load();
   }, [])
 
+
+
   async function convertFunction(){
 
-   ffmpeg.FS('writeFile', 'test.mov', await fetchFile(videoFiles));
+  const zip = new JSZip();
+    //console.log(videoFiles)
+  for(let i = 0; i < Object.keys(videoFiles).length; i++){
+   ffmpeg.FS('writeFile', 'test.mov', await fetchFile(videoFiles[i]));
 
-   await ffmpeg.run("-i", 'test.mov', "-vcodec", "copy", "-acodec", "copy", 'out.mp4');
+   await ffmpeg.run("-i", 'test.mov',  "-vcodec", "copy", "-acodec", "copy", 'out.mp4');
 //'-qscale', '0',
     const data = ffmpeg.FS('readFile', 'out.mp4');
 
@@ -33,20 +40,29 @@ function App() {
 
     setReady(url);
 
+    zip.file("out.mp4", fetchFile(url), {base64: true});
+  }  
+    zip.generateAsync({type: "blob"}).then(content => {
+      saveAs(content, "example.zip");
+    });
+  
+
   }
+
+
 
   return ready ? (
     <div className="App">
       {videoFiles && <video 
                       height='500'
                       width="450"
-                      src={URL.createObjectURL(videoFiles)}
+                      src={URL.createObjectURL(videoFiles[0])}
                       type="video/mov"
                       controls
                       >
                       </video>}
       <p>FFMPEG is COOL!</p>
-      <input type="file" id="files" name="files" onChange={(e)=> setVideoFiles(e.target.files[0])} multiple/>
+      <input type="file" id="files" name="files" onChange={(e)=> setVideoFiles(e.target.files)} multiple/>
       <button onClick={convertFunction}>Convert</button>
      {ready && <video src={ready} height='500' width='450' type="video/mp4" controls />}
     </div>
