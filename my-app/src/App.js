@@ -2,16 +2,24 @@ import {React, useEffect, useState} from "react";
 import { createFFmpeg, fetchFile} from "@ffmpeg/ffmpeg";
 import JSZip from "jszip";
 import {saveAs} from "file-saver"
+import SelectFormatButton from "./components/selects/SelectPhotoFormat";
+import SelectVideoFormatButton from "./components/selects/SelectVideoFormat";
 
 const ffmpeg = createFFmpeg({log: true});
 
 function App() {
 
 
+  const [selectedPhotoExtention, setSelectedPhotoExtention] = useState("");
+  const [selectedVideoExtention, setSelectedVideoExtention] = useState("");
   const [videoFiles, setVideoFiles] = useState();
   const [ready, setReady] = useState(false);
 
   const readyVideos = {};
+
+  function getExtension(filename) {
+    return filename.split('.').pop().toLowerCase();
+  }
 
   async function load (){
     await ffmpeg.load();
@@ -55,6 +63,16 @@ function App() {
   return ready ? (
     <div className="App">
       <p>FFMPEG is COOL!</p>
+      <SelectFormatButton
+        value = {selectedPhotoExtention}
+        onChange={setSelectedPhotoExtention}
+      />
+
+      <SelectVideoFormatButton
+        value = {selectedVideoExtention}
+        onChange={setSelectedVideoExtention}
+      />
+
       <input type="file" id="files" name="files" onChange={(e)=> setVideoFiles(e.target.files)} multiple/>
       <button onClick={convertFunction}>Convert</button>
      {ready && <video src={ready} height='500' width='450' type="video/mp4" controls />}
