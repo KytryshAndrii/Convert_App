@@ -2,23 +2,22 @@ import {React, useEffect, useState} from "react";
 import { createFFmpeg, fetchFile} from "@ffmpeg/ffmpeg";
 import JSZip from "jszip";
 import {saveAs} from "file-saver"
-import SelectFormatButton from "./components/selects/SelectPhotoFormat";
-import SelectVideoFormatButton from "./components/selects/SelectVideoFormat";
+import SelectExtentionModule from "./components/selects/SelectExtentionModule";
 
 const ffmpeg = createFFmpeg({log: true});
 
 function App() {
 
+  const [selectedExtention, setSelectedExtention] = useState("");
+  const [extention, setExtention] = useState("");
 
-  const [selectedPhotoExtention, setSelectedPhotoExtention] = useState("");
-  const [selectedVideoExtention, setSelectedVideoExtention] = useState("");
   const [videoFiles, setVideoFiles] = useState();
   const [ready, setReady] = useState(false);
 
   const readyVideos = {};
 
-  function getExtension(filename) {
-    return filename.split('.').pop().toLowerCase();
+  async function getExtension(filename) {
+    setExtention(filename.split('.').pop().toLowerCase());
   }
 
   async function load (){
@@ -44,37 +43,32 @@ function App() {
   }
 
   async function convertFunction(){
+  await getExtension(videoFiles[0].name);
 
-  for(let i = 0; i < Object.keys(videoFiles).length; i++){
+  //for(let i = 0; i < Object.keys(videoFiles).length; i++){
 
-    ffmpeg.FS('writeFile', 'test.mov', await fetchFile(videoFiles[i]));
+  //  ffmpeg.FS('writeFile', 'test.mov', await fetchFile(videoFiles[i]));
 
-    await ffmpeg.run("-i", 'test.mov',  "-vcodec", "copy", "-acodec", "copy", 'out.mp4');
+   // await ffmpeg.run("-i", 'test.mov',  "-vcodec", "copy", "-acodec", "copy", 'out.mp4');
 
-    const data = ffmpeg.FS('readFile', 'out.mp4');
+   // const data = ffmpeg.FS('readFile', 'out.mp4');
 
-    const url = URL.createObjectURL(new Blob([data.buffer], {type: "video/mp4"}));
-    readyVideos[i] = url;
+   // const url = URL.createObjectURL(new Blob([data.buffer], {type: "video/mp4"}));
+  //  readyVideos[i] = url;
 
-  }
-    generateZip(readyVideos);
+ // }
+  //  generateZip(readyVideos);
 }
 
   return ready ? (
     <div className="App">
-      <p>FFMPEG is COOL!</p>
-      <SelectFormatButton
-        value = {selectedPhotoExtention}
-        onChange={setSelectedPhotoExtention}
-      />
-
-      <SelectVideoFormatButton
-        value = {selectedVideoExtention}
-        onChange={setSelectedVideoExtention}
-      />
-
       <input type="file" id="files" name="files" onChange={(e)=> setVideoFiles(e.target.files)} multiple/>
       <button onClick={convertFunction}>Convert</button>
+      <SelectExtentionModule
+        extention={extention}
+        value={selectedExtention}
+        onChange={setSelectedExtention}
+      />
      {ready && <video src={ready} height='500' width='450' type="video/mp4" controls />}
     </div>
   ) : (<p>Loading .....</p>)
