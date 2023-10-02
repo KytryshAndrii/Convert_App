@@ -5,7 +5,7 @@ import SelectVideoFormatButton from "./SelectVideoFormat";
 
 function SelectExtentionModule({extention, value, onChange}){
 
-    const photo_format = ["pdf", "jpg", "png"];
+    const photo_format = ["pdf", "jpg", "png", "avif"];
 
     return photo_format.includes(extention) ? (
         <Fragment>
