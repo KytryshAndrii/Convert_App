@@ -8,13 +8,20 @@ const ffmpeg = createFFmpeg({log: true});
 
 function App() {
 
+
+  const photo_format = ["pdf", "jpg", "png", "avif"];
   const [selectedExtention, setSelectedExtention] = useState("");
   const [extention, setExtention] = useState("");
 
-  const [videoFiles, setVideoFiles] = useState();
+  const [videoFiles, setVideoFiles] = useState([]);
   const [ready, setReady] = useState(false);
 
-  const readyVideos = {};
+  const readyFiles = {};
+
+  function setFiles(e){
+    e.preventDefault()
+    setVideoFiles(e.target.files)
+  };
 
   async function getExtension(filename) {
     setExtention(filename.split('.').pop().toLowerCase());
@@ -28,6 +35,12 @@ function App() {
   useEffect(()=>{
     load();
   }, [])
+
+  useEffect(() => { 
+    if(Object.keys(videoFiles).length > 0)
+    {
+      getExtension(videoFiles[0].name)
+    } }, [videoFiles])
 
   function generateZip(file_array){
     const zip = new JSZip();
@@ -43,26 +56,31 @@ function App() {
   }
 
   async function convertFunction(){
-  await getExtension(videoFiles[0].name);
 
-  //for(let i = 0; i < Object.keys(videoFiles).length; i++){
+    const filename = 'test'+extention;
+    const out_filename = 'out'+selectedExtention
 
-  //  ffmpeg.FS('writeFile', 'test.mov', await fetchFile(videoFiles[i]));
+  for(let i = 0; i < Object.keys(videoFiles).length; i++){
 
-   // await ffmpeg.run("-i", 'test.mov',  "-vcodec", "copy", "-acodec", "copy", 'out.mp4');
+    ffmpeg.FS('writeFile', filename, await fetchFile(videoFiles[i]));
 
-   // const data = ffmpeg.FS('readFile', 'out.mp4');
+    if(photo_format.includes(selectedExtention)){
+      await ffmpeg.run("-i", filename,  "-c:v", "libjxl", out_filename);  
+    }else{
+      await ffmpeg.run("-i", filename,  "-vcodec", "copy", "-acodec", "copy", out_filename);
+    }
+    const data = ffmpeg.FS('readFile', selectedExtention);
 
-   // const url = URL.createObjectURL(new Blob([data.buffer], {type: "video/mp4"}));
-  //  readyVideos[i] = url;
+    const url = URL.createObjectURL(new Blob([data.buffer]));
+    readyFiles[i] = url;
 
- // }
-  //  generateZip(readyVideos);
+  }
+    generateZip(readyFiles);
 }
 
   return ready ? (
     <div className="App">
-      <input type="file" id="files" name="files" onChange={(e)=> setVideoFiles(e.target.files)} multiple/>
+      <input type="file" id="files" name="files" onChange={(e)=> setFiles(e)} multiple/>
       <button onClick={convertFunction}>Convert</button>
       <SelectExtentionModule
         extention={extention}
