@@ -11,10 +11,21 @@ function App() {
   const [selectedExtention, setSelectedExtention] = useState("");
   const [extention, setExtention] = useState("");
 
-  const [videoFiles, setVideoFiles] = useState();
+  const [videoFiles, setVideoFiles] = useState([]);
   const [ready, setReady] = useState(false);
 
   const readyVideos = {};
+
+  function setFiles(e){
+    e.preventDefault()
+    setVideoFiles(e.target.files)
+  };
+
+  useEffect(() => { 
+    if(Object.keys(videoFiles).length > 0)
+    {
+      getExtension(videoFiles[0].name)
+    } }, [videoFiles])
 
   async function getExtension(filename) {
     setExtention(filename.split('.').pop().toLowerCase());
@@ -43,26 +54,25 @@ function App() {
   }
 
   async function convertFunction(){
-  await getExtension(videoFiles[0].name);
 
-  //for(let i = 0; i < Object.keys(videoFiles).length; i++){
+  for(let i = 0; i < Object.keys(videoFiles).length; i++){
 
-  //  ffmpeg.FS('writeFile', 'test.mov', await fetchFile(videoFiles[i]));
+    ffmpeg.FS('writeFile', 'test.mov', await fetchFile(videoFiles[i]));
 
-   // await ffmpeg.run("-i", 'test.mov',  "-vcodec", "copy", "-acodec", "copy", 'out.mp4');
+    await ffmpeg.run("-i", 'test.mov',  "-vcodec", "copy", "-acodec", "copy", 'out.mp4');
 
-   // const data = ffmpeg.FS('readFile', 'out.mp4');
+    const data = ffmpeg.FS('readFile', 'out.mp4');
 
-   // const url = URL.createObjectURL(new Blob([data.buffer], {type: "video/mp4"}));
-  //  readyVideos[i] = url;
+    const url = URL.createObjectURL(new Blob([data.buffer], {type: "video/mp4"}));
+    readyVideos[i] = url;
 
- // }
-  //  generateZip(readyVideos);
+  }
+    generateZip(readyVideos);
 }
 
   return ready ? (
     <div className="App">
-      <input type="file" id="files" name="files" onChange={(e)=> setVideoFiles(e.target.files)} multiple/>
+      <input type="file" id="files" name="files" onChange={(e)=> setFiles(e)} multiple/>
       <button onClick={convertFunction}>Convert</button>
       <SelectExtentionModule
         extention={extention}
