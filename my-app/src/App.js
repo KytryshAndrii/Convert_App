@@ -8,24 +8,20 @@ const ffmpeg = createFFmpeg({log: true});
 
 function App() {
 
+
+  const photo_format = ["pdf", "jpg", "png", "avif"];
   const [selectedExtention, setSelectedExtention] = useState("");
   const [extention, setExtention] = useState("");
 
   const [videoFiles, setVideoFiles] = useState([]);
   const [ready, setReady] = useState(false);
 
-  const readyVideos = {};
+  const readyFiles = {};
 
   function setFiles(e){
     e.preventDefault()
     setVideoFiles(e.target.files)
   };
-
-  useEffect(() => { 
-    if(Object.keys(videoFiles).length > 0)
-    {
-      getExtension(videoFiles[0].name)
-    } }, [videoFiles])
 
   async function getExtension(filename) {
     setExtention(filename.split('.').pop().toLowerCase());
@@ -39,6 +35,12 @@ function App() {
   useEffect(()=>{
     load();
   }, [])
+
+  useEffect(() => { 
+    if(Object.keys(videoFiles).length > 0)
+    {
+      getExtension(videoFiles[0].name)
+    } }, [videoFiles])
 
   function generateZip(file_array){
     const zip = new JSZip();
@@ -55,19 +57,25 @@ function App() {
 
   async function convertFunction(){
 
+    const filename = 'test'+extention;
+    const out_filename = 'out'+selectedExtention
+
   for(let i = 0; i < Object.keys(videoFiles).length; i++){
 
-    ffmpeg.FS('writeFile', 'test.mov', await fetchFile(videoFiles[i]));
+    ffmpeg.FS('writeFile', filename, await fetchFile(videoFiles[i]));
 
-    await ffmpeg.run("-i", 'test.mov',  "-vcodec", "copy", "-acodec", "copy", 'out.mp4');
+    if(photo_format.includes(selectedExtention)){
+      await ffmpeg.run("-i", filename,  "-c:v", "libjxl", out_filename);  
+    }else{
+      await ffmpeg.run("-i", filename,  "-vcodec", "copy", "-acodec", "copy", out_filename);
+    }
+    const data = ffmpeg.FS('readFile', selectedExtention);
 
-    const data = ffmpeg.FS('readFile', 'out.mp4');
-
-    const url = URL.createObjectURL(new Blob([data.buffer], {type: "video/mp4"}));
-    readyVideos[i] = url;
+    const url = URL.createObjectURL(new Blob([data.buffer]));
+    readyFiles[i] = url;
 
   }
-    generateZip(readyVideos);
+    generateZip(readyFiles);
 }
 
   return ready ? (
