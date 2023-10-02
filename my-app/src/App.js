@@ -10,7 +10,7 @@ function App() {
 
 
   const photo_format = ["pdf", "jpg", "png", "avif"];
-  
+
   const [selectedExtention, setSelectedExtention] = useState("");
   const [extention, setExtention] = useState("");
 
@@ -43,7 +43,8 @@ function App() {
       getExtension(videoFiles[0].name)
     } }, [videoFiles])
 
-  function generateZip(file_array, extention){
+
+function generateZip(file_array, extention){
     const zip = new JSZip();
     const dist_folder = zip.folder("Converted_Files");
 
@@ -58,10 +59,8 @@ function App() {
 
   async function convertFunction(){
 
-    const filename = 'test'+ extention;
-    const out_filename = 'out'+ selectedExtention.value
-    console.log(out_filename)
-    console.log(filename)
+    const filename = 'test'+extention;
+    const out_filename = 'out'+selectedExtention.value
 
   for(let i = 0; i < Object.keys(videoFiles).length; i++){
 
@@ -72,12 +71,16 @@ function App() {
     }else{
       await ffmpeg.run("-i", filename,  "-vcodec", "copy", "-acodec", "copy", out_filename);
     }
+
+    
     const data = ffmpeg.FS('readFile', out_filename);
+
 
     const url = URL.createObjectURL(new Blob([data.buffer]));
     readyFiles[i] = url;
 
   }
+
     generateZip(readyFiles, selectedExtention.value);
 }
 
