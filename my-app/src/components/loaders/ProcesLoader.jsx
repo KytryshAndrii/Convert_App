@@ -19,6 +19,7 @@ function LinearProgressWithLabel(props) {
   );
 }
 
+
  function ProcesLoader({state, total}) {
 
     const MAX = total;
@@ -34,3 +35,5 @@ function LinearProgressWithLabel(props) {
 }
 
 export default ProcesLoader;
+
+
