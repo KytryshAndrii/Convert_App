@@ -1,21 +1,24 @@
-import {React, useEffect, useState} from "react"; 
+import {Fragment, React, useEffect, useState} from "react"; 
 import { createFFmpeg, fetchFile} from "@ffmpeg/ffmpeg";
 import JSZip from "jszip";
 import {saveAs} from "file-saver"
 import SelectExtentionModule from "./components/selects/SelectExtentionModule";
+import Loader from "./components/loaders/Loader";
+import ProcesLoader from "./components/loaders/ProcesLoader";
 
 const ffmpeg = createFFmpeg({log: true});
 
 function App() {
 
 
-  const photo_format = ["pdf", "jpg", "png", "avif"];
+  const photo_format = ['.pdf', '.jpg', '.png', '.avif'];
 
   const [selectedExtention, setSelectedExtention] = useState("");
   const [extention, setExtention] = useState("");
 
   const [videoFiles, setVideoFiles] = useState([]);
   const [ready, setReady] = useState(false);
+  const [converted, setConverted] = useState(false);
 
   const readyFiles = {};
 
@@ -59,28 +62,26 @@ function generateZip(file_array, extention){
 
   async function convertFunction(){
 
-    const filename = 'test'+extention;
+    setConverted(true);
+    const filename = 'test.'+extention;
     const out_filename = 'out'+selectedExtention.value
 
   for(let i = 0; i < Object.keys(videoFiles).length; i++){
 
     ffmpeg.FS('writeFile', filename, await fetchFile(videoFiles[i]));
 
-    if(photo_format.includes(selectedExtention)){
+    if(photo_format.includes(selectedExtention.value)){
       await ffmpeg.run("-i", filename,  "-c:v", "libjxl", out_filename);  
     }else{
       await ffmpeg.run("-i", filename,  "-vcodec", "copy", "-acodec", "copy", out_filename);
     }
 
-    
     const data = ffmpeg.FS('readFile', out_filename);
-
-
     const url = URL.createObjectURL(new Blob([data.buffer]));
     readyFiles[i] = url;
 
   }
-
+    setConverted(false)
     generateZip(readyFiles, selectedExtention.value);
 }
 
@@ -93,9 +94,11 @@ function generateZip(file_array, extention){
         value={selectedExtention}
         onChange={setSelectedExtention}
       />
-     {ready && <video src={ready} height='500' width='450' type="video/mp4" controls />}
+     {converted?<Loader></Loader>:<Fragment></Fragment>}
     </div>
-  ) : (<p>Loading .....</p>)
+  ) : (<Fragment>
+          <Loader></Loader>
+      </Fragment>)
 }
 
 export default App;
