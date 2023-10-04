@@ -9,7 +9,7 @@ const ffmpeg = createFFmpeg({log: true});
 function App() {
 
 
-  const photo_format = ["pdf", "jpg", "png", "avif"];
+  const photo_format = [".pdf", ".jpg", ".png", ".avif"];
   
   const [selectedExtention, setSelectedExtention] = useState("");
   const [extention, setExtention] = useState("");
@@ -58,7 +58,7 @@ function App() {
 
   async function convertFunction(){
 
-    const filename = 'test'+ extention;
+    const filename = 'test.'+ extention;
     const out_filename = 'out'+ selectedExtention.value
     console.log(out_filename)
     console.log(filename)
@@ -67,7 +67,7 @@ function App() {
 
     ffmpeg.FS('writeFile', filename, await fetchFile(videoFiles[i]));
 
-    if(photo_format.includes(selectedExtention)){
+    if(photo_format.includes(selectedExtention.vaue)){
       await ffmpeg.run("-i", filename,  "-c:v", "libjxl", out_filename);  
     }else{
       await ffmpeg.run("-i", filename,  "-vcodec", "copy", "-acodec", "copy", out_filename);
