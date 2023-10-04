@@ -1,13 +1,13 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
+
 function LinearProgressWithLabel(props) {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Box sx={{ width: '100%', mr: 1 }}>
+      <Box sx={{ width: '60%', height: "20%", mr: 1 }}>
         <LinearProgress variant="determinate" {...props} />
       </Box>
       <Box sx={{ minWidth: 35 }}>
@@ -19,29 +19,21 @@ function LinearProgressWithLabel(props) {
   );
 }
 
-LinearProgressWithLabel.propTypes = {
-  /**
-   * The value of the progress indicator for the determinate and buffer variants.
-   * Value between 0 and 100.
-   */
-  value: PropTypes.number.isRequired,
-};
 
-export default function ProcesLoader() {
-  const [progress, setProgress] = React.useState(10);
+ function ProcesLoader({state, total}) {
 
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
-    }, 800);
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
+    const MAX = total;
+    const MIN = 0;
+
+    const normalise = (value) => ((value - MIN) * 100) / (MAX - MIN);
 
   return (
     <Box sx={{ width: '100%' }}>
-      <LinearProgressWithLabel value={progress} />
+      <LinearProgressWithLabel value={normalise(state)} />
     </Box>
   );
 }
+
+export default ProcesLoader;
+
+

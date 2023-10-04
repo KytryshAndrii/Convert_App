@@ -1,17 +1,23 @@
-import {Fragment, React, useEffect, useState} from "react"; 
+
+import {React, useEffect, useState, Fragment} from "react"; 
 import { createFFmpeg, fetchFile} from "@ffmpeg/ffmpeg";
 import JSZip from "jszip";
 import {saveAs} from "file-saver"
 import SelectExtentionModule from "./components/selects/SelectExtentionModule";
-import Loader from "./components/loaders/Loader";
 import ProcesLoader from "./components/loaders/ProcesLoader";
+import Loader from "./components/loaders/Loader";
+
 
 const ffmpeg = createFFmpeg({log: true});
 
 function App() {
 
 
-  const photo_format = ['.pdf', '.jpg', '.png', '.avif'];
+
+  const photo_format = [".pdf", ".jpg", ".png", ".avif"];
+
+  const [processtate, setProcesstate] = useState(0);
+  
 
   const [selectedExtention, setSelectedExtention] = useState("");
   const [extention, setExtention] = useState("");
@@ -60,17 +66,30 @@ function generateZip(file_array, extention){
       });
   }
 
-  async function convertFunction(){
+  function checkDestination(){
+    if(selectedExtention !== ""){
+        convertFunction();
+    }
+    else{
+      alert("Please choose extention");
+    }
+  }
 
+
+  async function convertFunction(){
     setConverted(true);
-    const filename = 'test.'+extention;
-    const out_filename = 'out'+selectedExtention.value
+    const filename = 'test.'+ extention;
+    const out_filename = 'out'+ selectedExtention.value
+
 
   for(let i = 0; i < Object.keys(videoFiles).length; i++){
 
+    setProcesstate(i);
+
     ffmpeg.FS('writeFile', filename, await fetchFile(videoFiles[i]));
 
-    if(photo_format.includes(selectedExtention.value)){
+    if(photo_format.includes(selectedExtention.vaue)){
+
       await ffmpeg.run("-i", filename,  "-c:v", "libjxl", out_filename);  
     }else{
       await ffmpeg.run("-i", filename,  "-vcodec", "copy", "-acodec", "copy", out_filename);
@@ -81,24 +100,29 @@ function generateZip(file_array, extention){
     readyFiles[i] = url;
 
   }
-    setConverted(false)
+
+    setConverted(false);
+
     generateZip(readyFiles, selectedExtention.value);
 }
 
   return ready ? (
-    <div className="App">
+    <div className="App" style={{display:"flex",paddingTop:"100px", top:"20%", flexDirection: "column" , alignItems:"center", alignContent:"center", width:"100%"}}>
       <input type="file" id="files" name="files" onChange={(e)=> setFiles(e)} multiple/>
-      <button onClick={convertFunction}>Convert</button>
+      <button onClick={checkDestination}>Convert</button>
       <SelectExtentionModule
         extention={extention}
         value={selectedExtention}
         onChange={setSelectedExtention}
       />
-     {converted?<Loader></Loader>:<Fragment></Fragment>}
+
+      {converted?<ProcesLoader
+                    state={processtate}
+                    total={Object.keys(videoFiles).length}
+                  />:<Fragment></Fragment>}
     </div>
-  ) : (<Fragment>
-          <Loader></Loader>
-      </Fragment>)
+  ) : (<div style={{display:"flex", paddingTop:"100px", flexDirection: "column" , alignItems:"center", alignContent:"center", width:"100%"}}><Loader></Loader></div>)
+
 }
 
 export default App;
