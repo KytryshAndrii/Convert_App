@@ -6,6 +6,7 @@ import {saveAs} from "file-saver"
 import SelectExtentionModule from "./components/selects/SelectExtentionModule";
 import ProcesLoader from "./components/loaders/ProcesLoader";
 import Loader from "./components/loaders/Loader";
+import FileInput from "./components/inputs/FileInput";
 
 
 const ffmpeg = createFFmpeg({log: true});
@@ -14,7 +15,7 @@ function App() {
 
 
 
-  const photo_format = [".pdf", ".jpg", ".png", ".avif"];
+  const photo_format = ['.pdf', '.jp', '.png', '.avif'];
 
   const [processtate, setProcesstate] = useState(0);
   
@@ -78,6 +79,7 @@ function generateZip(file_array, extention){
 
   async function convertFunction(){
     setConverted(true);
+
     const filename = 'test.'+ extention;
     const out_filename = 'out'+ selectedExtention.value
 
@@ -87,9 +89,9 @@ function generateZip(file_array, extention){
     setProcesstate(i);
 
     ffmpeg.FS('writeFile', filename, await fetchFile(videoFiles[i]));
+    console.log(typeof String(selectedExtention.value))
 
-    if(photo_format.includes(selectedExtention.vaue)){
-
+    if(photo_format.includes(String(selectedExtention.value))){
       await ffmpeg.run("-i", filename,  "-c:v", "libjxl", out_filename);  
     }else{
       await ffmpeg.run("-i", filename,  "-vcodec", "copy", "-acodec", "copy", out_filename);
@@ -108,14 +110,15 @@ function generateZip(file_array, extention){
 
   return ready ? (
     <div className="App" style={{display:"flex",paddingTop:"100px", top:"20%", flexDirection: "column" , alignItems:"center", alignContent:"center", width:"100%"}}>
-      <input type="file" id="files" name="files" onChange={(e)=> setFiles(e)} multiple/>
-      <button onClick={checkDestination}>Convert</button>
+     <FileInput
+       onChange={setFiles} 
+     /> 
       <SelectExtentionModule
         extention={extention}
         value={selectedExtention}
         onChange={setSelectedExtention}
       />
-
+      <button onClick={checkDestination}>Convert</button>
       {converted?<ProcesLoader
                     state={processtate}
                     total={Object.keys(videoFiles).length}
