@@ -5,7 +5,7 @@ import SelectVideoFormatButton from "./SelectVideoFormat";
 
 function SelectExtentionModule({extention, value, onChange}){
 
-    const photo_format = ["pdf", "jpg", "png", "avif"];
+    const photo_format = ["jpg", "png", "avif"];
 
     return( 
     <div style={{width:"50%", alignContent:"center"}}>

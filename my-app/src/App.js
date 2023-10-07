@@ -11,7 +11,7 @@ const ffmpeg = createFFmpeg({log: true});
 function App() {
 
 
-  const photo_format = [".pdf", ".jpg", ".png", ".avif"];
+  const photo_format = [".jpg", ".png", ".avif"];
 
   const [processtate, setProcesstate] = useState(0);
   
