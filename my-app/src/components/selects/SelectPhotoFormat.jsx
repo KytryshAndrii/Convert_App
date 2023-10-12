@@ -1,8 +1,9 @@
 import React from "react";
 import photo_extentios from "../../options/photoOptions";
 import Select from 'react-select';
+import { isDisabled } from "@testing-library/user-event/dist/utils";
 
-function SelectFormatButton({value, onChange}){
+function SelectFormatButton({value, onChange, isDisabled}){
 
     return (
         <Select
@@ -11,6 +12,7 @@ function SelectFormatButton({value, onChange}){
         options={photo_extentios}
         placeholder= "Choose extention"
         isSearchable= {true}
+        isClearable={isDisabled}
       />
     );
 }

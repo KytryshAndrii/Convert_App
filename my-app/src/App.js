@@ -2,9 +2,11 @@ import {React, useEffect, useState, Fragment} from "react";
 import { createFFmpeg, fetchFile} from "@ffmpeg/ffmpeg";
 import JSZip from "jszip";
 import {saveAs} from "file-saver"
-import SelectExtentionModule from "./components/selects/SelectExtentionModule";
+import ConvertButton from "./components/buttons/ConvertButton";
 import ProcesLoader from "./components/loaders/ProcesLoader";
 import Loader from "./components/loaders/Loader";
+import UploadComponent from "./components/uploadcomponent/UploadComponent";
+import Stack from '@mui/material/Stack';
 
 const ffmpeg = createFFmpeg({log: true});
 
@@ -97,19 +99,14 @@ function App() {
 }
 
   return ready ? (
-    <div className="App" style={{display:"flex",paddingTop:"100px", top:"20%", flexDirection: "column" , alignItems:"center", alignContent:"center", width:"100%"}}>
-      <input type="file" id="files" name="files" onChange={(e)=> setFiles(e)} multiple/>
-      <button onClick={checkDestination}>Convert</button>
-      <SelectExtentionModule
-        extention={extention}
-        value={selectedExtention}
-        onChange={setSelectedExtention}
-      />
+    <Stack className="App" direction="column" justifyContent="flex-end" alignItems="center" spacing={2} > 
+     <UploadComponent onChange={setFiles} onChangeSelect={setSelectedExtention} value={selectedExtention} extention={extention}/>
+     <ConvertButton onClick={checkDestination}/>
       {converted?<ProcesLoader
                     state={processtate}
                     total={Object.keys(videoFiles).length}
                   />:<Fragment></Fragment>}
-    </div>
+    </Stack>
   ) : (<div style={{display:"flex", paddingTop:"100px", flexDirection: "column" , alignItems:"center", alignContent:"center", width:"100%"}}><Loader></Loader></div>)
 }
 
