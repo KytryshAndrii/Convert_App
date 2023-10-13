@@ -1,3 +1,4 @@
+
 import {React, useEffect, useState, Fragment} from "react"; 
 import { createFFmpeg, fetchFile} from "@ffmpeg/ffmpeg";
 import JSZip from "jszip";
@@ -10,9 +11,10 @@ import "./index.css"
 const ffmpeg = createFFmpeg({log: false});
 
 function App() {
-
+  
   const [processtate, setProcesstate] = useState(0);
   
+
   const [selectedExtention, setSelectedExtention] = useState("");
   const [extention, setExtention] = useState("");
 
@@ -52,7 +54,8 @@ function App() {
       getExtension(videoFiles[0].name)
     } }, [videoFiles])
 
-  function generateZip(file_array, extention){
+
+function generateZip(file_array, extention){
     const zip = new JSZip();
     const dist_folder = zip.folder("Converted_Files");
 
@@ -74,13 +77,16 @@ function App() {
     }
   }
 
+
   async function convertFunction(){
     setConverted(true);
     let start = Date.now();
+
     const filename = 'test.'+ extention;
     const out_filename = 'out'+ selectedExtention.value;
 
     for(let i = 0; i < Object.keys(videoFiles).length; i++){
+
 
       setProcesstate(i);
 
@@ -93,14 +99,17 @@ function App() {
       }else{ 
         await ffmpeg.run("-i", filename,  "-vcodec", "copy", "-acodec", "copy", out_filename);
     }
-    const data = ffmpeg.FS('readFile', out_filename);
 
+    const data = ffmpeg.FS('readFile', out_filename);
     const url = URL.createObjectURL(new Blob([data.buffer]));
     readyFiles[i] = url;
 
   }
+
     setTimeout(Date.now() - start);
+
     setConverted(false);
+
     generateZip(readyFiles, selectedExtention.value);
 }
 
@@ -122,6 +131,7 @@ function App() {
       />
     </div>
   ) : (<Loader/>)
+
 }
 
 export default App;
