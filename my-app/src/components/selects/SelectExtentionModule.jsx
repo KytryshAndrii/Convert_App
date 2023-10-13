@@ -5,21 +5,25 @@ import SelectVideoFormatButton from "./SelectVideoFormat";
 
 function SelectExtentionModule({extention, value, onChange}){
 
-    const photo_format = ["pdf", "jpg", "png", "avif"];
+    const photo_format = ["jpg", "png", "avif"];
+    var isDisabled = true;
 
     return( 
-    <div style={{width:"50%", alignContent:"center"}}>
+    <div className="mt-8">
+    {extention? isDisabled = false: <></>}
     {photo_format.includes(extention) ? 
         <Fragment>
             <SelectFormatButton
                 value = {value}
                 onChange={onChange}
+                isDisabled={isDisabled}
             />
         </Fragment> :
         <Fragment>
             <SelectVideoFormatButton
                 value = {value}
                 onChange={onChange}
+                isDisabled={isDisabled}
                 />
         </Fragment>
         }

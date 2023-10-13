@@ -9,10 +9,16 @@ function LinearProgressWithLabel(props) {
 
   
   return (
-    <Fragment>
-        {/* <LinearProgress variant="determinate" {...props} /> */}
-        {/* <Typography variant="body2" color="text.secondary">{math}</Typography> */}
-   </Fragment>
+    <Box sx={{position:"absolute", display: 'flex', alignItems: 'center', width:"47%", mt:"15px"}}>
+      <Box sx={{ width: '100%'}}>
+        <LinearProgress variant="determinate" {...props} />
+      </Box>
+      <Box sx={{ minWidth: 35 }}>
+        <Typography variant="body2" color="text.secondary">...{`${Math.round(
+          props.value,
+        )}%`}</Typography>
+      </Box>
+    </Box>
   );
 }
 

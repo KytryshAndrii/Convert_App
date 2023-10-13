@@ -2,7 +2,7 @@ import React from "react";
 import video_extentios from "../../options/videoOptions";
 import Select from 'react-select';
 
-function SelectVideoFormatButton({value, onChange}){
+function SelectVideoFormatButton({value, onChange, isDisabled}){
 
     return (
         <Select
@@ -11,6 +11,7 @@ function SelectVideoFormatButton({value, onChange}){
         options={video_extentios}
         placeholder= "Choose extention"
         isSearchable= {true}
+        isDisabled ={isDisabled}
       />
     );
 }

@@ -3,20 +3,15 @@ import {React, useEffect, useState, Fragment} from "react";
 import { createFFmpeg, fetchFile} from "@ffmpeg/ffmpeg";
 import JSZip from "jszip";
 import {saveAs} from "file-saver"
-import SelectExtentionModule from "./components/selects/SelectExtentionModule";
-import ProcesLoader from "./components/loaders/ProcesLoader";
 import Loader from "./components/loaders/Loader";
-import FileInput from "./components/inputs/FileInput";
+import TextComponent from "./components/text/TextComponent";
+import MainIntarface from "./components/interface/MainIntarface";
+import "./index.css"
 
-
-const ffmpeg = createFFmpeg({log: true});
+const ffmpeg = createFFmpeg({log: false});
 
 function App() {
-
-
-
-  const photo_format = ['.pdf', '.jp', '.png', '.avif'];
-
+  
   const [processtate, setProcesstate] = useState(0);
   
 
@@ -27,11 +22,16 @@ function App() {
   const [ready, setReady] = useState(false);
   const [converted, setConverted] = useState(false);
 
+  const[counter, setCounter] = useState(0);
+
+  const[timeout, setTimeout] = useState(0);
+
   const readyFiles = {};
 
   function setFiles(e){
     e.preventDefault()
     setVideoFiles(e.target.files)
+    
   };
 
   async function getExtension(filename) {
@@ -50,6 +50,7 @@ function App() {
   useEffect(() => { 
     if(Object.keys(videoFiles).length > 0)
     {
+      setCounter(videoFiles.length)
       getExtension(videoFiles[0].name)
     } }, [videoFiles])
 
@@ -79,22 +80,24 @@ function generateZip(file_array, extention){
 
   async function convertFunction(){
     setConverted(true);
+    let start = Date.now();
 
     const filename = 'test.'+ extention;
-    const out_filename = 'out'+ selectedExtention.value
+    const out_filename = 'out'+ selectedExtention.value;
+
+    for(let i = 0; i < Object.keys(videoFiles).length; i++){
 
 
-  for(let i = 0; i < Object.keys(videoFiles).length; i++){
+      setProcesstate(i);
 
-    setProcesstate(i);
+      ffmpeg.FS('writeFile', filename, await fetchFile(videoFiles[i]));
 
-    ffmpeg.FS('writeFile', filename, await fetchFile(videoFiles[i]));
-    console.log(typeof String(selectedExtention.value))
-
-    if(photo_format.includes(String(selectedExtention.value))){
-      await ffmpeg.run("-i", filename,  "-c:v", "libjxl", out_filename);  
-    }else{
-      await ffmpeg.run("-i", filename,  "-vcodec", "copy", "-acodec", "copy", out_filename);
+      if(selectedExtention.value == '.avif'){
+        await ffmpeg.run("-i", filename,  "-c:v", "libaom-av1", out_filename);
+      }else if(selectedExtention.value == '.png' || selectedExtention.value == '.jpg'){
+        await ffmpeg.run("-i", filename,  out_filename); 
+      }else{ 
+        await ffmpeg.run("-i", filename,  "-vcodec", "copy", "-acodec", "copy", out_filename);
     }
 
     const data = ffmpeg.FS('readFile', out_filename);
@@ -103,28 +106,31 @@ function generateZip(file_array, extention){
 
   }
 
+    setTimeout(Date.now() - start);
+
     setConverted(false);
 
     generateZip(readyFiles, selectedExtention.value);
 }
 
   return ready ? (
-    <div className="App" style={{display:"flex",paddingTop:"100px", top:"20%", flexDirection: "column" , alignItems:"center", alignContent:"center", width:"100%"}}>
-     <FileInput
-       onChange={setFiles} 
-     /> 
-      <SelectExtentionModule
-        extention={extention}
-        value={selectedExtention}
-        onChange={setSelectedExtention}
+    <div className="bg-gradient-to-r from-pink-400 via-red-400 to-yellow-400
+    background-animate flex items-center justify-center flex-col h-screen w-full" >
+    <TextComponent/>
+    <MainIntarface
+      onChange={setFiles}
+      onChangeSelect={setSelectedExtention}
+      value={selectedExtention}
+      extention={extention}
+      counter={counter}
+      timeout={timeout}
+      files={videoFiles}
+      onClick={checkDestination}
+      state={processtate}
+      converted={converted}
       />
-      <button onClick={checkDestination}>Convert</button>
-      {converted?<ProcesLoader
-                    state={processtate}
-                    total={Object.keys(videoFiles).length}
-                  />:<Fragment></Fragment>}
     </div>
-  ) : (<div style={{display:"flex", paddingTop:"100px", flexDirection: "column" , alignItems:"center", alignContent:"center", width:"100%"}}><Loader></Loader></div>)
+  ) : (<Loader/>)
 
 }
 
