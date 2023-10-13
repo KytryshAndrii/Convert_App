@@ -36,3 +36,4 @@ To run this project, install it locally cloning repo, than using npm:
 
 ### Version:
 * V1.0 [Current]
+* V1.1 [Flexible design for many devises]
