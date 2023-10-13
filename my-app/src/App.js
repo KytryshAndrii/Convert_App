@@ -6,7 +6,7 @@ import ConvertButton from "./components/buttons/ConvertButton";
 import ProcesLoader from "./components/loaders/ProcesLoader";
 import Loader from "./components/loaders/Loader";
 import UploadComponent from "./components/uploadcomponent/UploadComponent";
-import Stack from '@mui/material/Stack';
+import "./index.css"
 
 const ffmpeg = createFFmpeg({log: true});
 
@@ -99,15 +99,18 @@ function App() {
 }
 
   return ready ? (
-    <Stack className="App" direction="column" justifyContent="flex-end" alignItems="center" spacing={2} > 
+    <div className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500
+    background-animate flex items-center justify-center h-screen w-full" >
+      <div className="bg-white shadow-md p-8 w-full max-w-md  h-1/3 rounded-lg shadow-4xl"> 
      <UploadComponent onChange={setFiles} onChangeSelect={setSelectedExtention} value={selectedExtention} extention={extention}/>
      <ConvertButton onClick={checkDestination}/>
       {converted?<ProcesLoader
                     state={processtate}
                     total={Object.keys(videoFiles).length}
                   />:<Fragment></Fragment>}
-    </Stack>
-  ) : (<div style={{display:"flex", paddingTop:"100px", flexDirection: "column" , alignItems:"center", alignContent:"center", width:"100%"}}><Loader></Loader></div>)
+      </div>
+    </div>
+  ) : (<div className="flex items-center justify-center h-screen"><Loader></Loader></div>)
 }
 
 export default App;
