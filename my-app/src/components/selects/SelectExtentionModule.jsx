@@ -9,7 +9,7 @@ function SelectExtentionModule({extention, value, onChange}){
     var isDisabled = true;
 
     return( 
-    <div className="h-1/2 pt-7 mr-4 mt-4">
+    <div className="mt-8">
     {extention? isDisabled = false: <></>}
     {photo_format.includes(extention) ? 
         <Fragment>

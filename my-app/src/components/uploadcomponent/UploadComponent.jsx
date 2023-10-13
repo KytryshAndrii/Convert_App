@@ -4,7 +4,7 @@ import SelectExtentionModule from "../selects/SelectExtentionModule";
 
 function UploadComponent({onChange, extention, value, onChangeSelect}){
     return(
-        <div className="flex justify-between  w-full h-1/2">
+        <div className="flex justify-around  w-full h-[33%] mt-[-5rem] shadow-3xl">
             <UploadButton onChange={(e)=> onChange(e)}/>
             <SelectExtentionModule
                 extention={extention}

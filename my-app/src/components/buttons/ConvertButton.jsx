@@ -15,7 +15,7 @@ const theme = createTheme({
 
 function ConvertButton({onClick}){
     return(
-      <div className="pl-21 mt-8 ml-2">
+      <div className="mt-6">
         <ThemeProvider theme={theme}>
             <Button variant="outlined" startIcon={<RotateRightIcon />} onClick={onClick} color="primary" size="large">
                 Convert Files
