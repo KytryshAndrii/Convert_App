@@ -1,6 +1,7 @@
 # Convertation App V1.0
 Convertation App allows you to convert few files and receive them back in .zip file.
-You can convertate as video files as photos. 
+You can convertate as video files as photos. [FFFmpeg](https://www.npmjs.com/package/@ffmpeg/core) library was used to change files extention.
+You need to choose files that ypu want to convert, choose extantion, press "convertation button".
 
 ## Life Demo
 ![Demo](./ReadmePhotos/prewiu.gif)
@@ -28,16 +29,10 @@ Extantion of source file is defined automaticaly by app.
 
 To run this project, install it locally cloning repo, than using npm:
 ```
-
+> cd ./my-app
 > npm install
 > npm start
 ```
 
 ### Version:
-* V0.1 [First version - first deploy]
-* V0.2 [TailwindCSS was added]
-* V0.3 [New Custom Page design]
-* V0.4 [updated API]
-* V0.5 [Charts added]
-* V0.6 [New design added]
-* V0.7 [Current]
+* V1.0 [Current]
