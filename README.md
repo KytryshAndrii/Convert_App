@@ -1,4 +1,4 @@
-# Convertation App V1.0
+# Conversion App V1.0
 Convertation App allows you to convert few files and receive them back in .zip file.
 You can convertate as video files as photos. [FFFmpeg](https://www.npmjs.com/package/@ffmpeg/core) library was used to change files extention.
 You need to choose files that ypu want to convert, choose extantion, press "convertation button".
